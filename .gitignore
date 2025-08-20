@@ -1,5 +1,5 @@
 # IDE / Editor
-*.vscode/*
+front/.vscode/
 !.vscode/extensions.json
 *.idea/*
 *.suo
@@ -8,6 +8,9 @@
 *.sln
 *.sw?
 *.tsbuildinfo
+
+
+
 
 # System
 .DS_Store
