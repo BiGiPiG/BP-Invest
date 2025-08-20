@@ -1,7 +1,7 @@
 # IDE / Editor
-.vscode/*
+*.vscode/*
 !.vscode/extensions.json
-.idea/*
+*.idea/*
 *.suo
 *.ntvs*
 *.njsproj
@@ -15,7 +15,7 @@ Thumbs.db
 
 # Dependencies
 node_modules/
-.venv/*
+*.venv/*
 
 # Build outputs
 dist/
