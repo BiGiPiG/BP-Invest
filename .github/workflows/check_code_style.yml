@@ -1,0 +1,26 @@
+name: CODE_STYLE_CHECK
+on: [push]
+
+jobs:
+  checkstyle-job:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./rest_api
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '24'
+
+      - name: Check code with Checkstyle
+        run: |
+          java -Duser.language=en \
+               -jar ./checkstyle/checkstyle-11.0.0-all.jar \
+               -c ./checkstyle/google_checks_custom.xml ./src
