@@ -1,0 +1,26 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #151A27;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#main_page {
+    width: 1280px;
+    height: 720px;
+    background: #284fa9;
+    border-radius: 10px;
+}

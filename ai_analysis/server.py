@@ -7,35 +7,35 @@ app = Flask(__name__)
 client = Client()
 
 GPT_PROMPT = """
-    Проанализируй акцию {symbol} и предоставь краткую инвестиционную оценку.
+    Analyze the stock of {symbol} and provide a brief investment assessment.
     
-    ### Требуемая структура ответа
-    1. Общая оценка: Дай короткое резюме (2-3 предложения) об инвестиционной привлекательности компании.
+    ### Required response structure
+    1. Overall Assessment: Give a short summary (2–3 sentences) of the company's investment attractiveness.
     
-    2. Оценка привлекательности: Вырази итоговую оценку в формате X/10 (где 10 — максимально привлекательная инвестиция).
+    2. Attractiveness Rating: Express the final rating in the format X/10 (where 10 means highly attractive investment).
     
-    3. Плюсы (Pros): Укажи ключевые сильные стороны компании (1–3 пункта).
+    3. Pros: List the key strengths of the company (1–3 items).
     
-    4. Минусы (Cons): Укажи ключевые слабые стороны или риски (1–3 пункта).
+    4. Cons: List the main weaknesses or risks of the company (1–3 items).
     
-    ### Учитывай:
-    - Финансовое состояние компании (например, P/E, P/S, P/B, EPS, рыночная капитализация).
-    - Рыночную позицию и отраслевые факторы.
-    - Текущие мультипликаторы и их влияние на оценку.
+    ### Consider:
+    - The company's financial condition (e.g., P/E, P/S, P/B, EPS, market capitalization).
+    - Market position and industry factors.
+    - Current multipliers and their impact on the assessment.
     
-    Формат ответа:
-    - Кратко и по делу.
-    - Списки плюсов и минусов оформи через запятую в одну строчку.
-    - Каждый пункт начинай с новой строки
+    Response format:
+    - Concise and to the point.
+    - List pros and cons in one line, separated by commas.
+    - Start each item on a new line.
     
-    Образец вывода:
-    "Описание: Apple inc. имеет сильные рыночные позиции и устойчивые финансовые показатели, что делает её привлекательной для инвестиций.
-     Оценка: 7 - умеренно привлекательна
+    Example output:
+    "Description: Apple Inc. has a strong market position and solid financials, making it attractive for investment.
+     Rating: 7 - moderately attractive
     
     Pros: pros1, pros2, ...
     
     Cons: cons1, cons2, ..."
-    """
+"""
 
 def build_prompt(symbol: str) -> str:
     return GPT_PROMPT.format(symbol=symbol)
@@ -64,4 +64,4 @@ def analyze():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=9000, debug=True)
+    app.run(host='0.0.0.0', port=9000, debug=True)
