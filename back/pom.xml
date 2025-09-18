@@ -11,7 +11,7 @@
 	<groupId>io.github.bigpig</groupId>
 	<artifactId>back</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>rest_api</name>
+	<name>back</name>
 	<description>api application</description>
 	<url/>
 	<licenses>
