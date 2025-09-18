@@ -7,7 +7,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./rest_api
+        working-directory: ./back
 
     steps:
       - name: Checkout repository
