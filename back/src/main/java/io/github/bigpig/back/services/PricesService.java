@@ -3,6 +3,7 @@ package io.github.bigpig.back.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bigpig.back.dto.PointDto;
+import io.github.bigpig.back.exceptions.FetchDataException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,7 @@ public class PricesService {
             }
             return points;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
+            throw new FetchDataException(String.format("Failed to fetch prices data for ticker: %s", ticker));
         }
     }
 
