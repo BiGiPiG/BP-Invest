@@ -1,5 +1,7 @@
 package io.github.bigpig.back.services;
 
+import io.github.bigpig.back.exceptions.EntitySaveException;
+import io.github.bigpig.back.exceptions.UserAlreadyExistsException;
 import io.github.bigpig.back.models.User;
 import io.github.bigpig.back.repositories.RoleRepository;
 import io.github.bigpig.back.repositories.UserRepository;
@@ -42,12 +44,19 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public boolean createNewUser(User user) {
+    @Transactional
+    public void createNewUser(User user) {
+        String role = "ROLE_USER";
         if (findByUsername(user.getUsername()).isPresent()) {
-            return false;
+            throw new UserAlreadyExistsException(user.getUsername());
         }
-        user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
-        userRepository.save(user);
-        return true;
+        user.setRoles(List.of(roleRepository.findByName(role).orElseThrow(
+                () -> new IllegalStateException(String.format("Role %s not found", role))
+        )));
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new EntitySaveException("User create exception");
+        }
     }
 }
