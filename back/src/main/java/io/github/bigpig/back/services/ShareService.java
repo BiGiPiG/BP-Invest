@@ -1,6 +1,7 @@
 package io.github.bigpig.back.services;
 
 import io.github.bigpig.back.dto.ShareDto;
+import io.github.bigpig.back.exceptions.FetchDataException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,13 @@ public class ShareService {
 
     public ShareDto getMainInfo(String ticker) {
         String url = buildUrl(ticker);
-        return restTemplate.getForObject(url, ShareDto.class);
+        ShareDto info = null;
+        try {
+            info = restTemplate.getForObject(url, ShareDto.class);
+        } catch (Exception ex) {
+            throw new FetchDataException(String.format("Failed to fetch share data for ticker: %s", ticker));
+        }
+        return info;
     }
 
     public String buildUrl(String ticker) {

@@ -2,6 +2,7 @@ package io.github.bigpig.back.controllers;
 
 import io.github.bigpig.back.dto.ExceptionDto;
 import io.github.bigpig.back.exceptions.ErrorCodes;
+import io.github.bigpig.back.exceptions.FetchDataException;
 import io.github.bigpig.back.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +24,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ExceptionDto(ex.getMessage(),
                 ErrorCodes.USER_NOT_FOUND.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(FetchDataException.class)
+    public ResponseEntity<ExceptionDto> handleException(FetchDataException ex) {
+        return new ResponseEntity<>(new ExceptionDto(ex.getMessage(),
+                ErrorCodes.DATA_NOT_FETCHED.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }
