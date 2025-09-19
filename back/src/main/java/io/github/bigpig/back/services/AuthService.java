@@ -3,12 +3,11 @@ package io.github.bigpig.back.services;
 import io.github.bigpig.back.dto.JwtRequest;
 import io.github.bigpig.back.dto.RegistrationUserDto;
 import io.github.bigpig.back.dto.UserDto;
+import io.github.bigpig.back.exceptions.InvalidPasswordException;
+import io.github.bigpig.back.exceptions.LoginNotFoundException;
 import io.github.bigpig.back.models.User;
 import io.github.bigpig.back.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,16 +30,17 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(jwtRequest.username(), jwtRequest.password())
             );
         } catch(BadCredentialsException e) {
-            throw new BadCredentialsException("Bad credentials");
+            if (userService.findByUsername(jwtRequest.username()).isEmpty()) {
+                throw new LoginNotFoundException("Invalid login");
+            } else {
+                throw new InvalidPasswordException("Invalid password");
+            }
         }
         UserDetails userDetails = userService.loadUserByUsername(jwtRequest.username());
         return jwtUtils.generateJwtToken(userDetails);
     }
 
-    public UserDto registerUser(RegistrationUserDto registrationUserDto) throws BadRequestException {
-        if (userService.findByUsername(registrationUserDto.username()).isPresent()) {
-            throw new BadRequestException("Username is already in use");
-        }
+    public UserDto registerUser(RegistrationUserDto registrationUserDto) {
         User user = new User();
         user.setUsername(registrationUserDto.username());
         user.setPassword(passwordEncoder.encode(registrationUserDto.password()));

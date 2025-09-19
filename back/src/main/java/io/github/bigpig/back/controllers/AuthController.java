@@ -6,7 +6,6 @@ import io.github.bigpig.back.dto.RegistrationUserDto;
 import io.github.bigpig.back.dto.UserDto;
 import io.github.bigpig.back.services.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/registr")
-    public ResponseEntity<?> registerUser(@RequestBody RegistrationUserDto registrationUserDto) throws BadRequestException {
+    public ResponseEntity<?> registerUser(@RequestBody RegistrationUserDto registrationUserDto) {
         UserDto userDto = authService.registerUser(registrationUserDto);
         return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }

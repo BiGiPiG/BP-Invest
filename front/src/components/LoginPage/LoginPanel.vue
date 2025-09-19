@@ -328,8 +328,6 @@ function validateForm() {
   return keys.every((k) => !errors[k]);
 }
 
-const isFormValid = computed(() => validateForm());
-
 const visibleFields = computed(() => {
   if (signIn.value) {
     return [
@@ -362,6 +360,19 @@ async function handleLogin() {
         password: form.password
       })
     })
+
+    if (response.status === 404) {
+      const errorData = await response.json();
+
+      if (errorData.errorCode === 'USER_NOT_FOUND') {
+        errors.login = 'Login not found. Try another one';
+        touched.login = true;
+      } else if (errorData.errorCode === 'INVALID_PASSWORD') {
+        errors.password = 'Invalid password';
+        touched.password = true;
+      }
+      return;
+    }
 
     let data;
     try {
