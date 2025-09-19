@@ -31,13 +31,13 @@
           v-if="signIn"
           @click="handleLogin"
           class="btn-primary"
-          :disabled="!isFormValid"
+          :disabled="!form.login || !form.password"
         >Continue</button>
         <button
           v-else
           @click="handleRegistr"
           class="btn-primary"
-          :disabled="!isFormValid"
+          :disabled="!form.email || !form.login || !form.password || !form.confirmPassword"
         >Continue</button>
         <button v-if="signIn" class="btn-google">
           <span class="google-icon">G</span>
@@ -273,7 +273,7 @@ const touched = reactive({
 });
 
 const containerHeight = computed(() => {
-  return signIn.value ? '500px' : '680px';
+  return signIn.value ? '480px' : '680px';
 });
 
 function setMode(isSignIn) {
@@ -290,22 +290,29 @@ function validateField(key) {
   const value = form[key]?.toString().trim();
   let message = '';
 
-  const isRequired = () => {
+  const isFieldRequired = () => {
     if (signIn.value) {
       return key === 'login' || key === 'password';
     }
     return key === 'email' || key === 'login' || key === 'password' || key === 'confirmPassword';
   };
 
-  if (isRequired() && !value) {
+  if (isFieldRequired() && !value) {
     message = 'Field is required';
-  } else if (key === 'email' && value) {
-    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    if (!emailRe.test(value)) message = 'Invalid email';
-  } else if (key === 'password' && value) {
-    if (value.length < 6) message = 'Minimum 6 characters';
-  } else if (key === 'confirmPassword') {
-    if (value !== form.password) message = 'Passwords do not match';
+  }
+  else if (value) {
+    switch (key) {
+      case 'email':
+        const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+        if (!emailRe.test(value)) message = 'Invalid email';
+        break;
+      case 'password':
+        if (value.length < 6) message = 'Minimum 6 characters';
+        break;
+      case 'confirmPassword':
+        if (value !== form.password) message = 'Passwords do not match';
+        break;
+    }
   }
 
   errors[key] = message;
@@ -313,10 +320,12 @@ function validateField(key) {
 
 function validateForm() {
   const keys = signIn.value
-    ? ['login', 'password']
-    : ['email', 'login', 'password', 'confirmPassword'];
+      ? ['login', 'password']
+      : ['email', 'login', 'password', 'confirmPassword'];
+
   keys.forEach((k) => validateField(k));
-  return keys.every((k) => !errors[k] && !!form[k]);
+
+  return keys.every((k) => !errors[k]);
 }
 
 const isFormValid = computed(() => validateForm());
@@ -338,8 +347,12 @@ const visibleFields = computed(() => {
 
 async function handleLogin() {
   try {
-    Object.keys(touched).forEach((k) => (touched[k] = true));
-    if (!validateForm()) return;
+    const keys = ['login', 'password'];
+    keys.forEach((k) => (touched[k] = true));
+    keys.forEach((k) => validateField(k));
+
+    const isValid = keys.every((k) => !errors[k] && form[k]?.toString().trim());
+    if (!isValid) return;
 
     const response = await fetch('http://localhost:9001/api/auth/login', {
       method: 'POST',
@@ -374,8 +387,12 @@ async function handleLogin() {
 }
 
 async function handleRegistr() {
-  Object.keys(touched).forEach((k) => (touched[k] = true));
-  if (!validateForm()) return;
+  const keys = ['email', 'login', 'password', 'confirmPassword'];
+  keys.forEach((k) => (touched[k] = true));
+  keys.forEach((k) => validateField(k));
+
+  const isValid = keys.every((k) => !errors[k] && form[k]?.toString().trim());
+  if (!isValid) return;
   try {
     const response = await fetch('http://localhost:9001/api/auth/registr', {
       method: 'POST',
@@ -387,11 +404,10 @@ async function handleRegistr() {
       })
     })
 
-    if (!response.ok) {
-      let data = null;
-      try { data = await response.json(); } catch {}
-      const errorMessage = data?.message || data?.error || 'Ошибка регистрации';
-      throw new Error(errorMessage);
+    if (response.status === 409) {
+      errors.login = 'This login is already taken. Please choose another.';
+      touched.login = true;
+      return;
     }
 
     window.location.href = '/home'

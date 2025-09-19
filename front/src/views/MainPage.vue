@@ -68,7 +68,6 @@
 
   async function handleSearch(ticker) {
     if (!ticker) return;
-    console.log("App get: " + ticker);
     updateMainInfo(ticker);
     updateChart(ticker);
     updateAnalys(ticker);
@@ -82,10 +81,11 @@
           ...authHeaders()
         }
       });
-      if (!res.ok) throw new Error('Ошибка получения информации о компании');
+      if (!res.ok) {
+        throw new Error('Ошибка получения информации о компании');
+      }
 
       const data = await res.json();
-      console.log(data);
 
       info.ticker = data.ticker ?? data.Symbol ?? cleanedTicker;
       info.company = data.name ?? data.Name ?? '-';
