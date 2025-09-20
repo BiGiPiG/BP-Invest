@@ -17,6 +17,12 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginPage
+  },
+  {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: () => import('../views/AuthCallback.vue'),
+    meta: { requiresAuth: false }
   }
 ];
 
@@ -28,6 +34,11 @@ const router = createRouter({
 // Глобальный навигационный guard
 router.beforeEach((to, from, next) => {
   const isAuthenticated = Boolean(localStorage.getItem('token'));
+
+  if (to.meta.requiresAuth === false) {
+    next();
+    return;
+  }
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     // Если маршрут защищён, а пользователь не залогинен — редирект на /login

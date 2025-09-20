@@ -39,7 +39,7 @@
           class="btn-primary"
           :disabled="!form.email || !form.login || !form.password || !form.confirmPassword"
         >Continue</button>
-        <button v-if="signIn" class="btn-google">
+        <button v-if="signIn" class="btn-google" @click="handleGoogleLogin">
           <span class="google-icon">G</span>
           Continue with Google
         </button>
@@ -249,6 +249,8 @@
 <script setup lang="js">
 import { ref, reactive, computed } from 'vue'
 
+import useOAuth2 from '../../composables/useOAuth2'
+
 const signIn = ref(true);
 
 const form = reactive({
@@ -326,6 +328,12 @@ function validateForm() {
   keys.forEach((k) => validateField(k));
 
   return keys.every((k) => !errors[k]);
+}
+
+const { loginWithGoogle } = useOAuth2()
+
+function handleGoogleLogin() {
+  loginWithGoogle()
 }
 
 const visibleFields = computed(() => {
