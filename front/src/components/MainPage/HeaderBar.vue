@@ -1,11 +1,13 @@
 <template>
-  <header>
-    <div id="logo">
-      <img src="/images/Лого.png" width="40px" />
-      <span>BP Invest</span>
-    </div>
-    <div id="search_bar">
-      <SearchBar v-model="search" @search="onSearch" />
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="/images/Logo.png" alt="BP Invest Logo" class="logo-img" />
+        <span class="logo-text">BP Invest</span>
+      </div>
+      <div class="search-section">
+        <SearchBar v-model="search" @search="onSearch" />
+      </div>
     </div>
   </header>
 </template>
@@ -26,34 +28,98 @@ function onSearch(value) {
 </script>
 
 <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  header {
-    display: flex;
-    align-items: center;
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(90deg, #1a2238 0%, #151a27 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-radius: 0 0 16px 16px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.logo-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  white-space: nowrap;
+  line-height: 1;
+  width: 250px;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: block;
+}
+
+.search-section {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+@media (max-width: 1024px) {
+  .app-header {
+    padding: 0 16px;
+    height: 64px;
   }
 
-  #logo {
-    display: flex;
-    width: 15%;
-    height: 60px;
-    color: #fff;
-    font-family: "Inter";
-    font-weight: 600;
-    line-height: 40px;
-    font-size: 1.5em;
-    gap: 10px;
-    justify-content: center;
-    align-items: flex-end;
+  .logo-section {
+    font-size: 1.3rem;
   }
 
-  #search_bar {
-    flex: 1;
-    display: flex;
-    align-items: flex-end;
-    max-width: 50%;
-    height: 60px;
-    margin-left: 40px;
+  .logo-img {
+    width: 36px;
+    height: 36px;
   }
+
+  .header-content {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 6px;
+  }
+
+  .logo-section {
+    font-size: 1.2rem;
+  }
+
+  .search-section {
+    width: 100%;
+    max-width: none;
+  }
+}
 </style>
-

@@ -28,4 +28,39 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.auth-callback-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #202538;
+  color: white;
+  font-family: "Inter", sans-serif;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #389194;
+  border-top: 5px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.message {
+  font-size: 18px;
+  color: #e0e0e0;
+}
+
+.error-message {
+  font-size: 18px;
+  color: #ff6b6b;
+}
 </style>

@@ -1,210 +1,430 @@
 <template>
-    <div class="app-root">
+  <div class="app-root">
+    <header>
       <HeaderBar @search="handleSearch" />
-      <div class="main_container">
+    </header>
+    <div class="main-container">
+      <aside>
         <SideBar />
-        <main>
-          <InfoPanel :ticker="info.ticker" :company="info.company" :metrics="info.metrics" :marketCap="info.marketCap" />
-          <ChartPanel :chartData="data" />
-          <AnalysisPanel
-            :title="analysis.title"
-            :description="analysis.description"
-            :score="analysis.score"
-            :pros="analysis.pros"
-            :cons="analysis.cons"
-          />
-        </main>
-      </div>
+      </aside>
+      <main class="main-content" :class="{ active: isMainInfo || isAnalyse || isChart }">
+
+        <ul class="switcher">
+          <li @click="switchToMainInfo" :class="{ active: isMainInfo }">
+            <span class="label">Main info</span>
+          </li>
+          <li @click="switchToChart" :class="{ active: isChart }">
+            <span class="label">Chart</span>
+          </li>
+          <li @click="switchToAnalyse" :class="{ active: isAnalyse }">
+            <span class="label">AI analysis</span>
+          </li>
+        </ul>
+
+        <div class="content-container">
+          <div v-if="isMainInfo" class="content-section">
+            <InfoPanel
+                class="info-panel"
+                :ticker="info.ticker"
+                :company="info.company"
+                :metrics="info.metrics"
+                :marketCap="info.marketCap"
+            />
+          </div>
+          <div v-if="isChart" class="content-section">
+            <ChartPanel
+                class="chart-panel"
+                :chartData="data"
+            />
+          </div>
+          <div v-if="isAnalyse" class="content-section">
+            <AnalysisPanel
+                class="analysis-panel"
+                :title="analysis.title"
+                :description="analysis.description"
+                :score="analysis.score"
+                :pros="analysis.pros"
+                :cons="analysis.cons"
+            />
+          </div>
+        </div>
+
+      </main>
     </div>
-  </template>
+  </div>
+</template>
 
-  <script setup>
-  import { reactive } from 'vue';
+<script setup>
+import {computed, reactive, ref} from 'vue';
 
-  import HeaderBar from '../components/MainPage/HeaderBar.vue';
-  import SideBar from '../components/MainPage/SideBar.vue';
-  import AnalysisPanel from '../components/MainPage/AnalysisPanel.vue';
-  import InfoPanel from '../components/MainPage/InfoPanel.vue';
-  import ChartPanel from '../components/MainPage/ChartPanel.vue';
+import HeaderBar from '../components/MainPage/HeaderBar.vue';
+import SideBar from '../components/MainPage/SideBar.vue';
+import AnalysisPanel from '../components/MainPage/AnalysisPanel.vue';
+import InfoPanel from '../components/MainPage/InfoPanel.vue';
+import ChartPanel from '../components/MainPage/ChartPanel.vue';
 
-  function authHeaders() {
-    const token = localStorage.getItem('token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
+// tab management
+const isMainInfo = ref(true);
+const isChart = ref(false);
+const isAnalyse = ref(false);
 
-  const analysis = reactive({
-    title: 'AI Analysis',
-    description:
+const activeTab = computed(() => {
+  if (isMainInfo.value) return 'main-info';
+  if (isChart.value) return 'chart';
+  if (isAnalyse.value) return 'analyse';
+  return '';
+});
+
+function authHeaders() {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+const analysis = reactive({
+  title: 'AI Analysis',
+  description:
       'Apple inc. has a strong market position and solid financials. making it an attractive investment.',
-    score: '7/10 - moderately attractive',
-    pros: ['Strong market position'],
-    cons: ['High P/S ratio'],
-  });
+  score: '7/10 - moderately attractive',
+  pros: ['Strong market position'],
+  cons: ['High P/S ratio'],
+});
 
-  const info = reactive({
-    ticker: 'AAPL',
-    company: 'Apple Inc.',
-    marketCap: '2.4T',
-    metrics: [
-      { type: 'P/E', value: '28.7' },
-      { type: 'P/S', value: '7.5' },
-      { type: 'P/B', value: '40.1' },
-      { type: 'EPS', value: '6.21' },
-    ],
-  });
+const info = reactive({
+  ticker: 'AAPL',
+  company: 'Apple Inc.',
+  marketCap: '2.4T',
+  metrics: [
+    { type: 'P/E', value: '28.7' },
+    { type: 'P/S', value: '7.5' },
+    { type: 'P/B', value: '40.1' },
+    { type: 'EPS', value: '6.21' },
+  ],
+});
 
-  const data = reactive({
-    dates: [],
-    values: []
-  });
+const data = reactive({
+  dates: [],
+  values: []
+});
 
-  const testData = {
-    dates: ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-06', '2024-01-07', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12'],
-    values: [150, 152, 148, 155, 158, 160, 162, 159, 165, 168, 170, 172]
-  };
+const testData = {
+  dates: ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-06', '2024-01-07', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12'],
+  values: [150, 152, 148, 155, 158, 160, 162, 159, 165, 168, 170, 172]
+};
 
-  data.dates = testData.dates;
-  data.values = testData.values;
+data.dates = testData.dates;
+data.values = testData.values;
 
-  async function handleSearch(ticker) {
-    if (!ticker) return;
-    updateMainInfo(ticker);
-    updateChart(ticker);
-    updateAnalys(ticker);
-  }
+async function handleSearch(ticker) {
+  if (!ticker) return;
+  updateMainInfo(ticker);
+  updateChart(ticker);
+  updateAnalys(ticker);
+}
 
-  async function updateMainInfo(ticker) {
+async function updateMainInfo(ticker) {
+  const cleanedTicker = ticker.trim().toUpperCase();
 
-    try {
-      const res = await fetch(`/bp-invest/api/v1/main-info?ticker=${ticker}`, {
-        headers: {
-          ...authHeaders()
-        }
-      });
-      if (!res.ok) {
-        throw new Error('Ошибка получения информации о компании');
+  try {
+    const res = await fetch(`/bp-invest/api/v1/main-info?ticker=${cleanedTicker}`, {
+      headers: {
+        ...authHeaders()
       }
-
-      const data = await res.json();
-
-      info.ticker = data.ticker ?? data.Symbol ?? cleanedTicker;
-      info.company = data.name ?? data.Name ?? '-';
-      info.marketCap = data.market_cap ?? data.MarketCapitalization ?? '-';
-
-      info.metrics = [
-          { type: 'EPS', value: data.EPS ?? data.eps ?? '-' },
-          { type: 'P/E', value: data.PERatio ?? data['P/E'] ?? '-' },
-          { type: 'P/S', value: data.PriceToSalesRatioTTM ?? data['P/S'] ?? '-' },
-          { type: 'P/B', value: data.PriceToBookRatio ?? data['P/B'] ?? '-' }
-      ].filter(metric => metric.value !== '-');
-    } catch (err) {
-      console.error('Ошибка:', err);
-      info.ticker = cleanedTicker;
-      info.company = '-';
-      info.marketCap = '-';
-      info.metrics = [];
+    });
+    if (!res.ok) {
+      throw new Error('Ошибка получения информации о компании');
     }
+
+    const data = await res.json();
+
+    info.ticker = data.ticker ?? data.Symbol ?? cleanedTicker;
+    info.company = data.name ?? data.Name ?? '-';
+    info.marketCap = data.market_cap ?? data.MarketCapitalization ?? '-';
+
+    info.metrics = [
+      { type: 'EPS', value: data.EPS ?? data.eps ?? '-' },
+      { type: 'P/E', value: data.PERatio ?? data['P/E'] ?? '-' },
+      { type: 'P/S', value: data.PriceToSalesRatioTTM ?? data['P/S'] ?? '-' },
+      { type: 'P/B', value: data.PriceToBookRatio ?? data['P/B'] ?? '-' }
+    ].filter(metric => metric.value !== '-');
+  } catch (err) {
+    console.error('Ошибка:', err);
+    info.ticker = cleanedTicker;
+    info.company = '-';
+    info.marketCap = '-';
+    info.metrics = [];
   }
+}
 
-  async function updateChart(ticker) {
-    try {
-      const res = await fetch(`/bp-invest/api/v1/chart-info?ticker=${ticker}`, {
-        headers: {
-          ...authHeaders()
-        }
-      });
-      if (!res.ok) throw new Error('Ошибка получения информации о компании');
+async function updateChart(ticker) {
+  const cleanedTicker = ticker.trim().toUpperCase();
 
-      const chartJson = await res.json();
-      console.log('Chart data received:', chartJson);
-
-      if (Array.isArray(chartJson) && chartJson.length > 0) {
-        data.dates = chartJson.map(item => item.day);
-        data.values = chartJson.map(item => item.val);
-        console.log('Chart data updated:', { dates: data.dates, values: data.values });
-      } else {
-        console.warn('No chart data received, keeping test data');
+  try {
+    const res = await fetch(`/bp-invest/api/v1/chart-info?ticker=${cleanedTicker}`, {
+      headers: {
+        ...authHeaders()
       }
-    } catch (err) {
-      console.error('Error fetching chart data:', err);
+    });
+    if (!res.ok) throw new Error('Ошибка получения информации о компании');
+
+    const chartJson = await res.json();
+    console.log('Chart data received:', chartJson);
+
+    if (Array.isArray(chartJson) && chartJson.length > 0) {
+      data.dates = chartJson.map(item => item.day);
+      data.values = chartJson.map(item => item.val);
+      console.log('Chart data updated:', { dates: data.dates, values: data.values });
+    } else {
+      console.warn('No chart data received, keeping test data');
     }
+  } catch (err) {
+    console.error('Error fetching chart data:', err);
   }
+}
 
-  async function updateAnalys(ticker) {
-    try {
-      const res = await fetch(`/bp-invest/api/v1/ai-analyse?ticker=${ticker}`, {
-        headers: {
-          ...authHeaders()
-        }
-      });
-      if (!res.ok) throw new Error('Ошибка анализа');
+async function updateAnalys(ticker) {
+  const cleanedTicker = ticker.trim().toUpperCase();
 
-      const data = await res.json();
-      console.log(data);
+  try {
+    const res = await fetch(`/bp-invest/api/v1/ai-analyse?ticker=${cleanedTicker}`, {
+      headers: {
+        ...authHeaders()
+      }
+    });
+    if (!res.ok) throw new Error('Ошибка анализа');
 
-      analysis.title = 'AI Analysis';
-      analysis.description = data.overallAssessment ?? '';
-      analysis.score = data.rating ?? '';
-      analysis.pros = data.pros ?? [];
-      analysis.cons = data.cons ?? [];
-    } catch (err) {
-      console.error(err);
-    }
+    const data = await res.json();
+    console.log(data);
+
+    analysis.title = 'AI Analysis';
+    analysis.description = data.overallAssessment ?? '';
+    analysis.score = data.rating ?? '';
+    analysis.pros = data.pros ?? [];
+    analysis.cons = data.cons ?? [];
+  } catch (err) {
+    console.error(err);
   }
+}
 
-  </script>
+function switchToMainInfo() {
+  isMainInfo.value = true;
+  isChart.value = false;
+  isAnalyse.value = false;
+}
 
-  <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #151A27;
-  }
+function switchToChart() {
+  isMainInfo.value = false;
+  isChart.value = true;
+  isAnalyse.value = false;
+}
 
-  .app-root {
-    display: flex;
+function switchToAnalyse() {
+  isMainInfo.value = false;
+  isChart.value = false;
+  isAnalyse.value = true;
+}
+
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background-color: #0f1320;
+  color: #e0e0e0;
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+}
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  width: 100%;
+  height: 70px;
+  background: linear-gradient(90deg, #151A27 0%, #1a2238 100%);
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.main-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  padding: 20px;
+  gap: 20px;
+}
+
+aside {
+  width: 250px;
+  background: linear-gradient(180deg, #151A27 0%, #1a2238 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  padding: 20px 0;
+}
+
+.main-content {
+  flex: 1;
+  background: linear-gradient(145deg, #1a2238 0%, #151A27 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.switcher {
+  display: flex;
+  list-style: none;
+  background-color: #151A27;
+  border-bottom: 1px solid #2a324b;
+  margin: 0;
+  padding: 0;
+}
+
+.switcher > li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.switcher > li:hover {
+  background-color: rgba(35, 53, 97, 0.4);
+}
+
+.switcher > li.active {
+  background-color: #233561;
+  color: #fff;
+}
+
+.switcher > li.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #4a6bff, #38b6ff);
+}
+
+.switcher > li .icon {
+  font-size: 18px;
+}
+
+.switcher > li .label {
+  font-family: "Inter",serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  margin: 0;
+  background-clip: text;
+}
+
+.content-container {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.content-section {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  .main-container {
     flex-direction: column;
-    min-height: 100vh;
-  }
-
-  header {
-    display: flex;
-    width: 100%;
-    height: 60px;
-    background-color: #151A27;
-    flex-shrink: 0;
-  }
-
-  .main_container {
-    display: flex;
-    flex: 1;
-    height: calc(100% - 60px);
+    padding: 15px;
   }
 
   aside {
-    width: 15%;
-    color: #a0a0a0;
-    display: flex;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .switcher {
     flex-direction: column;
   }
 
-  main {
-    width: 85%;
-    padding: 1%;
-    background-color: #1F2331;
-    margin: 20px;
-    border-radius: 10px;
-    color: #a0a0a0;
-    display: grid;
-    flex: 1;
-    gap: 20px;
-    grid-template-areas:
-      "A C"
-      "B C";
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
-    resize: none;
-    overflow: hidden;
+  .switcher > li {
+    padding: 12px 15px;
+    justify-content: flex-start;
   }
-  </style>
+
+  .content-container {
+    padding: 16px;
+  }
+
+  .main-container {
+    padding: 10px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    height: 60px;
+  }
+
+  .switcher > li {
+    padding: 10px 12px;
+  }
+
+  .switcher > li .icon {
+    font-size: 16px;
+  }
+
+  .switcher > li .label {
+    font-size: 14px;
+  }
+
+  .content-container {
+    padding: 12px;
+  }
+}
+
+.content-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-container::-webkit-scrollbar-track {
+  background: #151a27;
+  border-radius: 4px;
+}
+
+.content-container::-webkit-scrollbar-thumb {
+  background: #2a324b;
+  border-radius: 4px;
+}
+
+.content-container::-webkit-scrollbar-thumb:hover {
+  background: #233561;
+}
+</style>
