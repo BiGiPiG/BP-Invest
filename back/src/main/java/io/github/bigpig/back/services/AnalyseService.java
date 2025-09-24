@@ -2,14 +2,15 @@ package io.github.bigpig.back.services;
 
 import io.github.bigpig.back.dto.AnalyseDto;
 import io.github.bigpig.back.dto.AnalyseResponseDto;
+import io.github.bigpig.back.exceptions.FetchDataException;
 import io.github.bigpig.back.util.AnalysisParser;
+import io.github.bigpig.back.util.UrlBuilder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class AnalyseService {
 
     RestTemplate restTemplate;
+    private final UrlBuilder urlBuilder;
     private final AnalysisParser analysisParser;
 
     public AnalyseDto getAnalyse(String ticker) {
@@ -30,14 +32,17 @@ public class AnalyseService {
 
         HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 
-        String url = buildUrl();
-        AnalyseResponseDto response = restTemplate.postForObject(url, request, AnalyseResponseDto.class);
-        assert response != null;
-        return analysisParser.parseAnalyse(response.analysis());
-    }
-
-    public String buildUrl() {
-        return UriComponentsBuilder.fromUriString("http://ai-analysis:9000/analyze")
-                .toUriString();
+        AnalyseDto analyseRes = null;
+        try {
+            AnalyseResponseDto response = restTemplate.postForObject(urlBuilder.buildAnalyseUrl(), request, AnalyseResponseDto.class);
+            if (response != null) {
+                analyseRes = analysisParser.parseAnalyse(response.analysis());
+            } else {
+                throw new FetchDataException(String.format("Failed to fetch analyse: %s", ticker));
+            }
+        } catch(IndexOutOfBoundsException ex) {
+            getAnalyse(ticker);
+        }
+        return analyseRes;
     }
 }

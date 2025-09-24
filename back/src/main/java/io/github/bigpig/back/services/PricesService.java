@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bigpig.back.dto.PointDto;
 import io.github.bigpig.back.exceptions.FetchDataException;
+import io.github.bigpig.back.util.UrlBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,14 +20,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PricesService {
 
-    @Value("${alpha-vintage.apiKey}")
-    private String apiKey;
-    private final String function = "TIME_SERIES_DAILY";
+    private final UrlBuilder urlBuilder;
     private final RestTemplate restTemplate;
 
     public List<PointDto> getPrices(String ticker) {
         try {
-            String json = restTemplate.getForObject(buildUrl(ticker), String.class);
+            String function = "TIME_SERIES_DAILY";
+            String url = urlBuilder.buildAlphaVintageUrl(ticker, function);
+            String json = restTemplate.getForObject(url, String.class);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(json);
@@ -60,13 +59,4 @@ public class PricesService {
             throw new FetchDataException(String.format("Failed to fetch prices data for ticker: %s", ticker));
         }
     }
-
-    public String buildUrl(String ticker) {
-        return UriComponentsBuilder.fromUriString("https://www.alphavantage.co/query")
-                .queryParam("function", function)
-                .queryParam("symbol", ticker)
-                .queryParam("apikey", apiKey)
-                .toUriString();
-    }
-
 }
