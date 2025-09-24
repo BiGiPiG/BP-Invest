@@ -74,8 +74,14 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-oauth2-client</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -105,6 +111,80 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>io/github/bigpig/back/dto/**</exclude>
+						<exclude>io/github/bigpig/back/models/**</exclude>
+						<exclude>io/github/bigpig/back/exceptions/**</exclude>
+						<exclude>io/github/bigpig/back/config/**</exclude>
+						<exclude>io/github/bigpig/back/*.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+<!--					<execution>-->
+<!--						<id>check-minimal</id>-->
+<!--						<phase>package</phase>-->
+<!--						<goals>-->
+<!--							<goal>check</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<excludes>-->
+<!--								<exclude>io/github/bigpig/back/dto/**</exclude>-->
+<!--								<exclude>io/github/bigpig/back/models/**</exclude>-->
+<!--								<exclude>io/github/bigpig/back/exceptions/**</exclude>-->
+<!--							</excludes>-->
+<!--							<rules>-->
+<!--								<rule>-->
+<!--									<element>BUNDLE</element>-->
+<!--									<limits>-->
+<!--										<limit>-->
+<!--											<counter>INSTRUCTION</counter>-->
+<!--											<value>COVEREDRATIO</value>-->
+<!--											<minimum>1.0</minimum> &lt;!&ndash; вот тут &ndash;&gt;-->
+<!--										</limit>-->
+<!--										<limit>-->
+<!--											<counter>BRANCH</counter>-->
+<!--											<value>COVEREDRATIO</value>-->
+<!--											<minimum>1.0</minimum> &lt;!&ndash; и тут &ndash;&gt;-->
+<!--										</limit>-->
+<!--										<limit>-->
+<!--											<counter>CLASS</counter>-->
+<!--											<value>MISSEDCOUNT</value>-->
+<!--											<maximum>0</maximum> &lt;!&ndash; и тут &ndash;&gt;-->
+<!--										</limit>-->
+<!--										<limit>-->
+<!--											<counter>METHOD</counter>-->
+<!--											<value>MISSEDCOUNT</value>-->
+<!--											<maximum>0</maximum> &lt;!&ndash; и тут &ndash;&gt;-->
+<!--										</limit>-->
+<!--										<limit>-->
+<!--											<counter>LINE</counter>-->
+<!--											<value>MISSEDCOUNT</value>-->
+<!--											<maximum>0</maximum> &lt;!&ndash; и тут &ndash;&gt;-->
+<!--										</limit>-->
+<!--									</limits>-->
+<!--								</rule>-->
+<!--							</rules>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+				</executions>
 			</plugin>
 		</plugins>
 		<finalName>app</finalName>
