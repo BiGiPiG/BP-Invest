@@ -7,6 +7,7 @@ import io.github.bigpig.back.exceptions.FetchDataException;
 import io.github.bigpig.back.util.UrlBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -21,13 +22,18 @@ import java.util.List;
 public class PricesService {
 
     private final UrlBuilder urlBuilder;
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     public List<PointDto> getPrices(String ticker) {
         try {
             String function = "TIME_SERIES_DAILY";
             String url = urlBuilder.buildAlphaVintageUrl(ticker, function);
-            String json = restTemplate.getForObject(url, String.class);
+            String json = restClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .toEntity(String.class)
+                    .getBody();
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(json);
