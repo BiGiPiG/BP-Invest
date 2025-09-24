@@ -3,70 +3,86 @@ package io.github.bigpig.back.util;
 import io.github.bigpig.back.dto.AnalyseDto;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class AnalysisParser {
 
-    private final String PART1 = "Overall Assessment: ";
-    private final String PART2 = "Attractiveness Rating: ";
-    private final String PART3 = "Pros:";
-    private  final String PART4 = "Cons:";
+    Pattern OVERALL_PATTERN = Pattern.compile(
+            "Overall Assessment:\\s*(.*?)\\s*Attractiveness Rating:",
+            Pattern.DOTALL
+    );
 
-    String text = """
-            {
-              "analysis": "Overall Assessment: IBM offers stable dividends and strong enterprise clients, but growth remains sluggish and valuation is average compared to peers.  \\nAttractiveness Rating: 5/10\\n\\nPros: Consistent dividend payout, entrenched in enterprise IT, sound cash flow.  \\nCons: Low revenue growth, exposure to legacy businesses, moderate P/E ratio limits upside.",
-              "symbol": "IBM"
-            }
-            """;
+
+    Pattern RATING_PATTERN = Pattern.compile(
+            "Attractiveness Rating:\\s*(.*?)\\s*Pros: ",
+            Pattern.DOTALL
+    );
+
+    Pattern PROS_PATTERN = Pattern.compile(
+            "Pros:\\s*(.*?)\\s*Cons: ",
+            Pattern.DOTALL
+    );
+
+    Pattern CONS_PATTERN = Pattern.compile(
+            "Cons:\\s*(.*?)(?=\\n\\n|\\z)",
+            Pattern.DOTALL
+    );
 
     public AnalyseDto parseAnalyse(String analyse) {
-
-        analyse = analyse.replace("\\n", "\n");
-
-        String overallAssessment = getOverallAssessment(analyse);
-        String rating = getRating(analyse);
-        String pros = getPros(analyse);
-        String cons = getCons(analyse);
-
-        return new AnalyseDto(overallAssessment, rating,
-                List.of(pros.split(", ")), List.of(cons.split(", ")));
-    }
-
-    private String getOverallAssessment(String analyse) {
-        System.out.println(analyse.substring(find(analyse, PART1) + PART1.length(), find(analyse, PART2)).strip());
-        return analyse.substring(find(analyse, PART1) + PART1.length(), find(analyse, PART2)).trim();
-    }
-
-    private String getRating(String analyse) {
-        System.out.println(analyse.substring(find(analyse, PART2) + PART2.length(), find(analyse, PART3)).strip());
-        return analyse.substring(find(analyse, PART2) + PART2.length(), find(analyse, PART3)).trim();
-    }
-
-    private String getPros(String analyse) {
-        System.out.println(analyse.substring(find(analyse, PART3) + PART3.length(), find(analyse, PART4)).strip());
-        return analyse.substring(find(analyse, PART3) + PART3.length(), find(analyse, PART4)).trim();
-    }
-
-    private String getCons(String analyse) {
-        System.out.println(analyse.substring(find(analyse, PART4) + PART4.length()).strip());
-        return analyse.substring(find(analyse, PART4) + PART4.length()).strip();
-    }
-
-    private int find (String text, String pattern) {
-        int t = 0;
-        int last = pattern.length() - 1;
-
-        while (t < text.length() - last) {
-            int p = 0;
-            while (p <= last && text.charAt(t + p) == pattern.charAt(p)) {
-                p++;
-            }
-            if (p == pattern.length()) {
-                return t;
-            }
-            t++;
+        if (analyse == null || analyse.trim().isEmpty()) {
+            throw new IllegalArgumentException("Analysis text cannot be null or empty");
         }
-        return -1;
+
+        analyse = analyse.replace("\\n", "\n").trim();
+
+        String overallAssessment = extractOverallAssessment(analyse);
+        String rating = extractRating(analyse);
+        List<String> pros = getItems(analyse, PROS_PATTERN);
+        List<String> cons = getItems(analyse, CONS_PATTERN);
+
+        return new AnalyseDto(
+                overallAssessment,
+                rating,
+                pros,
+                cons
+        );
+    }
+
+    public String extractOverallAssessment(String analyse) {
+        Matcher matcher = OVERALL_PATTERN.matcher(analyse);
+        if (matcher.find()) {
+            return matcher.group(1).replace("\\n", " ").replaceAll("\\s+", " ").trim();
+        }
+        return "Overall assessment not found";
+    }
+
+    public String extractRating(String analyse) {
+        Matcher matcher = RATING_PATTERN.matcher(analyse);
+        if (matcher.find()) {
+            return matcher.group(1).replace("\\n", " ").replaceAll("\\s+", " ").trim();
+        }
+        return "Rating not found";
+    }
+
+    List<String> getItems(String content, Pattern pattern) {
+        List<String> items = new ArrayList<>();
+        Matcher matcher = pattern.matcher(content);
+
+        if (matcher.find()) {
+            String[] pros = matcher.group(1).replace("\\n", " ").replaceAll("\\s+", " ").trim().split(",");
+            for (String item : pros) {
+                String capitalized = Character.toUpperCase(item.trim().charAt(0)) +
+                        (item.trim().length() > 1 ? item.trim().substring(1) : "");
+                items.add(capitalized);
+            }
+        } else {
+            items.add("Not found");
+        }
+
+        return items;
     }
 }
