@@ -85,8 +85,8 @@ graph TB
 Клонируйте репозиторий:
 
 ```bash
-git clone https://github.com/your-username/bp-invest.git
-cd bp-invest
+git clone https://github.com/BiGiPiG/BP-Invest.git
+cd BP-Invest
 ```
 
 Отредактируйте application.properties файл, указав ваши API-ключи
