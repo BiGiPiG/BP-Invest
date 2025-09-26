@@ -76,8 +76,8 @@ graph TB
 
 ## 🚀 Быстрый старт
 ### Предварительные требования
-- Docker 20.10+
-- Docker Compose 2.0+
+- Docker 28.3.2+
+- Docker Compose 2.38.2+
 - Сборка: Maven
 - Code Quality: Lombok
 
@@ -88,14 +88,10 @@ graph TB
 git clone https://github.com/your-username/bp-invest.git
 cd bp-invest
 ```
-Настройте переменные окружения:
 
-```bash
-cp .env.example .env
-```
-Отредактируйте .env файл, указав ваши API-ключи
+Отредактируйте application.properties файл, указав ваши API-ключи
 Запустите все сервисы:
 
 ```bash
-docker-compose up -d
+docker-compose up --build
 ```
