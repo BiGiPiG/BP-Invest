@@ -84,7 +84,7 @@ const useOAuth2 = () => {
             if (data.token) {
                 localStorage.setItem('token', data.token)
                 sessionStorage.removeItem('code_verifier') // очищаем
-                router.push('/home')
+                router.push('/bp-invest')
             } else {
                 throw new Error('No token received')
             }

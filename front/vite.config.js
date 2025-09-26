@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/bp-invest/api': {
-        target: 'http://backend:8080',
+        target: 'http://backend:8081',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/bp-invest\/api/, '/bp-invest/api'),
       },

@@ -8,7 +8,7 @@ const routes = [
     redirect: '/login'
   },
   {
-    path: '/home',
+    path: '/bp-invest',
     name: 'home',
     meta: { requiresAuth: true },
     component: MainPage
@@ -31,7 +31,6 @@ const router = createRouter({
   routes
 });
 
-// Глобальный навигационный guard
 router.beforeEach((to, from, next) => {
   const isAuthenticated = Boolean(localStorage.getItem('token'));
 
@@ -41,13 +40,11 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    // Если маршрут защищён, а пользователь не залогинен — редирект на /login
     next('/login')
   } else if (to.name === 'login' && isAuthenticated) {
-    // Если залогинен и пытается зайти на /login — редирект на главную
-    next('/home')
+    next('/bp-invest')
   } else {
-    next() // разрешить переход
+    next()
   }
 })
 
