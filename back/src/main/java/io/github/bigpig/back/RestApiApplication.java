@@ -3,7 +3,7 @@ package io.github.bigpig.back;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 /**
  * Main entry point for the REST API application.
@@ -19,7 +19,7 @@ public class RestApiApplication {
 	}
 
 	@Bean
-	public RestTemplate restTemplateBean() {
-		return new RestTemplate();
+	public RestClient restClientBean() {
+		return RestClient.create();
 	}
 }
