@@ -1,5 +1,11 @@
 <template>
-  <div class="board" id="analysis">
+  <div v-if="isLoading" class="analysis-spinner">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Generating AI Analysis...</p>
+    </div>
+  </div>
+  <div v-else class="board" id="analysis">
     <div class="header">
       <div class="score-badge">{{ score }}</div>
     </div>
@@ -45,6 +51,7 @@ defineProps({
   consTitle: { type: String, default: 'Cons' },
   pros: { type: Array, default: () => [] },
   cons: { type: Array, default: () => [] },
+  isLoading: false
 });
 </script>
 
@@ -61,7 +68,7 @@ defineProps({
   font-family: "Inter", sans-serif;
   color: #fff;
   max-width: 1000px;
-  margin: 2rem auto;
+  margin: 0.1rem auto;
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
 }
@@ -93,7 +100,7 @@ defineProps({
 .description {
   color: #b0b5c3;
   line-height: 1.7;
-  margin: 0 0 3rem 0;
+  margin: 0 0 2rem 0;
   font-size: 1.1rem;
   font-weight: 400;
   padding: 1.2rem;
@@ -256,10 +263,6 @@ defineProps({
     gap: 1rem;
   }
 
-  .title {
-    font-size: 1.8rem;
-  }
-
   .score-badge {
     align-self: flex-start;
     font-size: 1.1rem;
@@ -305,4 +308,68 @@ defineProps({
     gap: 0.5rem;
   }
 }
+
+/* Стили для спиннера */
+.analysis-spinner {
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1f2e 0%, #242a3d 100%);
+  border-radius: 16px;
+  box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  max-width: 1000px;
+  width: 90%; /* Добавил для адаптивности */
+  margin: 2rem auto; /* Отступ сверху и снизу */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  box-sizing: border-box; /* Важно для правильного расчета размеров */
+  height: fit-content;
+}
+
+.spinner-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #3DEDCD;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 20px rgba(61, 237, 205, 0.3);
+}
+
+.loading-text {
+  color: #b0b5c3;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+  background: linear-gradient(135deg, #b0b5c3 0%, #8a8f9d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 </style>

@@ -399,7 +399,7 @@ async function handleLogin() {
     }
 
     localStorage.setItem('token', data.token)
-    window.location.href = '/home'
+    window.location.href = '/bp-invest'
   } catch (error) {
     alert("Server error")
   }
@@ -429,7 +429,7 @@ async function handleRegistr() {
       return;
     }
 
-    window.location.href = '/home'
+    window.location.href = '/bp-invest'
   } catch (error) {
     alert("Server error")
   }

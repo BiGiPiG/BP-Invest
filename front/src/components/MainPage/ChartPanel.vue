@@ -1,5 +1,11 @@
 <template>
-  <div class="board" id="chart">
+  <div v-if="isLoading" class="chart-spinner">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Generating Chart...</p>
+    </div>
+  </div>
+  <div v-else class="board" id="chart">
     <div class="chart-header">
       <div class="chart-title">Price Chart</div>
       <ul class="period-selector">
@@ -38,7 +44,8 @@ const props = defineProps({
   chartData: {
     type: Object,
     default: () => ({ dates: [], values: [] })
-  }
+  },
+  isLoading: false
 });
 
 function setPeriod(period) {
@@ -369,6 +376,68 @@ onMounted(async () => {
 
   .chart-container {
     height: 200px;
+  }
+}
+
+/* Стили для спиннера */
+.chart-spinner {
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1f2e 0%, #242a3d 100%);
+  border-radius: 16px;
+  box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  max-width: 1000px;
+  width: 90%; /* Добавил для адаптивности */
+  margin: 2rem auto; /* Отступ сверху и снизу */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  box-sizing: border-box; /* Важно для правильного расчета размеров */
+  height: fit-content;
+}
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #3DEDCD;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 20px rgba(61, 237, 205, 0.3);
+}
+
+.loading-text {
+  color: #b0b5c3;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+  background: linear-gradient(135deg, #b0b5c3 0%, #8a8f9d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

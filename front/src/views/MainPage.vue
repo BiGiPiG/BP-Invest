@@ -29,12 +29,14 @@
                 :company="info.company"
                 :metrics="info.metrics"
                 :marketCap="info.marketCap"
+                :isLoading="info.isLoading"
             />
           </div>
           <div v-if="isChart" class="content-section">
             <ChartPanel
                 class="chart-panel"
                 :chartData="data"
+                :isLoading="data.isLoading"
             />
           </div>
           <div v-if="isAnalyse" class="content-section">
@@ -45,6 +47,7 @@
                 :score="analysis.score"
                 :pros="analysis.pros"
                 :cons="analysis.cons"
+                :isLoading="analysis.isLoading"
             />
           </div>
         </div>
@@ -68,12 +71,12 @@ const isMainInfo = ref(true);
 const isChart = ref(false);
 const isAnalyse = ref(false);
 
-const activeTab = computed(() => {
-  if (isMainInfo.value) return 'main-info';
-  if (isChart.value) return 'chart';
-  if (isAnalyse.value) return 'analyse';
-  return '';
-});
+// const activeTab = computed(() => {
+//   if (isMainInfo.value) return 'main-info';
+//   if (isChart.value) return 'chart';
+//   if (isAnalyse.value) return 'analyse';
+//   return '';
+// });
 
 function authHeaders() {
   const token = localStorage.getItem('token');
@@ -87,6 +90,7 @@ const analysis = reactive({
   score: '7/10 - moderately attractive',
   pros: ['Strong market position'],
   cons: ['High P/S ratio'],
+  isLoading: false
 });
 
 const info = reactive({
@@ -99,11 +103,13 @@ const info = reactive({
     { type: 'P/B', value: '40.1' },
     { type: 'EPS', value: '6.21' },
   ],
+  isLoading: false
 });
 
 const data = reactive({
   dates: [],
-  values: []
+  values: [],
+  isLoading: false
 });
 
 const testData = {
@@ -122,6 +128,7 @@ async function handleSearch(ticker) {
 }
 
 async function updateMainInfo(ticker) {
+  info.isLoading = true;
   const cleanedTicker = ticker.trim().toUpperCase();
 
   try {
@@ -153,9 +160,11 @@ async function updateMainInfo(ticker) {
     info.marketCap = '-';
     info.metrics = [];
   }
+  info.isLoading = false;
 }
 
 async function updateChart(ticker) {
+  data.isLoading = true;
   const cleanedTicker = ticker.trim().toUpperCase();
 
   try {
@@ -179,9 +188,11 @@ async function updateChart(ticker) {
   } catch (err) {
     console.error('Error fetching chart data:', err);
   }
+  data.isLoading = false;
 }
 
 async function updateAnalys(ticker) {
+  analysis.isLoading = true;
   const cleanedTicker = ticker.trim().toUpperCase();
 
   try {
@@ -203,6 +214,8 @@ async function updateAnalys(ticker) {
   } catch (err) {
     console.error(err);
   }
+
+  analysis.isLoading = false;
 }
 
 function switchToMainInfo() {
@@ -292,6 +305,7 @@ aside {
   border-bottom: 1px solid #2a324b;
   margin: 0;
   padding: 0;
+  flex-shrink: 0; /* Добавлено: предотвращает сжатие switcher */
 }
 
 .switcher > li {
@@ -341,13 +355,26 @@ aside {
 }
 
 .content-container {
-  flex: 1;
+  flex: 1; /* Изменено: теперь занимает все доступное пространство */
   padding: 24px;
   overflow-y: auto;
+  display: flex; /* Добавлено */
 }
 
 .content-section {
   animation: fadeIn 0.4s ease;
+  flex: 1; /* Добавлено: занимает все пространство контейнера */
+  display: flex; /* Добавлено */
+  flex-direction: column; /* Добавлено */
+}
+
+/* Стили для дочерних компонентов, чтобы они тоже занимали все пространство */
+.info-panel,
+.chart-panel,
+.analysis-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes fadeIn {
