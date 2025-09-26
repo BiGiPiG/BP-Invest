@@ -6,12 +6,9 @@ import io.github.bigpig.back.exceptions.FetchDataException;
 import io.github.bigpig.back.util.AnalysisParser;
 import io.github.bigpig.back.util.UrlBuilder;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,19 +22,15 @@ public class AnalyseService {
     private final AnalysisParser analysisParser;
 
     public AnalyseDto getAnalyse(String ticker) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         Map<String, String> body = new HashMap<>();
         body.put("symbol", ticker);
-
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 
         AnalyseDto analyseRes = null;
         try {
             AnalyseResponseDto response = restClient.post()
                 .uri(urlBuilder.buildAnalyseUrl())
-                .body(request)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
                 .retrieve()
                 .toEntity(AnalyseResponseDto.class)
                 .getBody();
