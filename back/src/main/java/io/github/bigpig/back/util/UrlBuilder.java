@@ -7,10 +7,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class UrlBuilder {
 
-    @Value("${alpha-vintage.apiKey}")
-    private String apiKey;
+    private final String apiKey;
+
+    public UrlBuilder(@Value("${alpha-vintage.apiKey}") String apiKey) {
+        this.apiKey = apiKey;
+    }
 
     public String buildAlphaVintageUrl(String ticker, String function) {
+        System.out.println(apiKey);
         return UriComponentsBuilder.fromUriString("https://www.alphavantage.co/query")
                 .queryParam("function", function)
                 .queryParam("symbol", ticker)
