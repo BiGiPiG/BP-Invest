@@ -40,6 +40,8 @@
 #### Инфраструктура
 - Контейнеризация: Docker + Docker Compose
 - База данных: PostgreSQL 14+
+- Сборка: Maven
+- Code Quality: Lombok
 
 ---
 
@@ -78,8 +80,6 @@ graph TB
 ### Предварительные требования
 - Docker 28.3.2+
 - Docker Compose 2.38.2+
-- Сборка: Maven
-- Code Quality: Lombok
 
 ### Запуск приложения
 Клонируйте репозиторий:
