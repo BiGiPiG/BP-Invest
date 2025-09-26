@@ -17,7 +17,8 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "9001:8080"
+      - "9001:8081"
+      - "9002:8080"
     networks:
       - bp-invest-net
 
