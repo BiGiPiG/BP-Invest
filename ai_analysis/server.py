@@ -6,39 +6,21 @@ app = Flask(__name__)
 
 client = Client()
 
-GPT_PROMPT = """
-    Analyze the stock of {symbol} and provide a brief investment assessment.
+prompt = """
+    Analyze the stock of {symbol} and provide a structured investment assessment.
     
-    ### Required response structure
-    1. Overall Assessment: Give a short summary (2–3 sentences) of the company's investment attractiveness.
+    RESPONSE MUST FOLLOW THIS EXACT FORMAT:
+
+    Overall Assessment: [2-3 sentence summary of investment attractiveness]
+    Attractiveness Rating: [X/10 where X is a number and short conclusion (2-3 words)]
+    Pros: [comma-separated list of 1-3 strengths(maximum 3)]
+    Cons: [comma-separated list of 1-3 weaknesses(maximum 3)]
     
-    2. Attractiveness Rating: Express the final rating in the format X/10 (where 10 means highly attractive investment).
-    
-    3. Pros: List the key strengths of the company (1–3 items).
-    
-    4. Cons: List the main weaknesses or risks of the company (1–3 items).
-    
-    ### Consider:
-    - The company's financial condition (e.g., P/E, P/S, P/B, EPS, market capitalization).
-    - Market position and industry factors.
-    - Current multipliers and their impact on the assessment.
-    
-    Response format:
-    - Concise and to the point.
-    - List pros and cons in one line, separated by commas.
-    - Start each item on a new line.
-    
-    Example output:
-    "Description: Apple Inc. has a strong market position and solid financials, making it attractive for investment.
-     Rating: 7 - moderately attractive
-    
-    Pros: pros1, pros2, ...
-    
-    Cons: cons1, cons2, ..."
-"""
+    Consider financial metrics, market position, and industry factors.
+    """
 
 def build_prompt(symbol: str) -> str:
-    return GPT_PROMPT.format(symbol=symbol)
+    return prompt.format(symbol=symbol)
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
