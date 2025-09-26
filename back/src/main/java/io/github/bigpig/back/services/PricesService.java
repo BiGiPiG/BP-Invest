@@ -8,14 +8,10 @@ import io.github.bigpig.back.util.UrlBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +56,8 @@ public class PricesService {
                 points.add(new PointDto(date, price));
 
             }
+
+            Collections.reverse(points);
             return points;
         } catch (Exception e) {
             throw new FetchDataException(String.format("Failed to fetch prices data for ticker: %s", ticker));
