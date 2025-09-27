@@ -53,7 +53,7 @@
 
 | AI-анализ акций | Страница аутентификации |
 | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/29968229-846d-487b-9eb6-74ca945be201" width="400" alt="AI-анализ"/> | <img width="1914" height="1009" alt="image" src="https://github.com/user-attachments/assets/ee8fb46c-4124-48f8-86d9-d54148baabf6" />
+| <img src="https://github.com/user-attachments/assets/29968229-846d-487b-9eb6-74ca945be201" width="400" alt="AI-анализ"/> | <img width="400" alt="Страница аутентификации" src="https://github.com/user-attachments/assets/ee8fb46c-4124-48f8-86d9-d54148baabf6" />
  |
 
 ---
