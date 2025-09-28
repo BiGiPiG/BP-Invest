@@ -58,59 +58,58 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref} from 'vue';
+import {reactive, ref} from 'vue';
 
 import HeaderBar from '../components/MainPage/HeaderBar.vue';
 import SideBar from '../components/MainPage/SideBar.vue';
 import AnalysisPanel from '../components/MainPage/AnalysisPanel.vue';
 import InfoPanel from '../components/MainPage/InfoPanel.vue';
 import ChartPanel from '../components/MainPage/ChartPanel.vue';
+import router from "../router/index.js";
 
 // tab management
 const isMainInfo = ref(true);
 const isChart = ref(false);
 const isAnalyse = ref(false);
 
-// const activeTab = computed(() => {
-//   if (isMainInfo.value) return 'main-info';
-//   if (isChart.value) return 'chart';
-//   if (isAnalyse.value) return 'analyse';
-//   return '';
-// });
-
 function authHeaders() {
   const token = localStorage.getItem('token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-const analysis = reactive({
-  title: 'AI Analysis',
-  description:
-      'Apple inc. has a strong market position and solid financials. making it an attractive investment.',
-  score: '7/10 - moderately attractive',
-  pros: ['Strong market position'],
-  cons: ['High P/S ratio'],
-  isLoading: false
-});
-
 const info = reactive({
-  ticker: 'AAPL',
-  company: 'Apple Inc.',
-  marketCap: '2.4T',
+  ticker: 'EXAMPLE',
+  company: 'Search for a company',
+  marketCap: 'Waiting for input...',
   metrics: [
-    { type: 'P/E', value: '28.7' },
-    { type: 'P/S', value: '7.5' },
-    { type: 'P/B', value: '40.1' },
-    { type: 'EPS', value: '6.21' },
+    { type: 'P/E', value: '---' },
+    { type: 'P/S', value: '---' },
+    { type: 'P/B', value: '---' },
+    { type: 'EPS', value: '---' },
   ],
   isLoading: false
 });
 
-const data = reactive({
-  dates: [],
-  values: [],
+const analysis = reactive({
+  title: 'Welcome to Stock Analyzer',
+  description: 'Use the search bar to analyze any stock. Get instant AI-powered insights, financial metrics, and interactive charts.',
+  score: 'Search to see rating',
+  pros: [
+    'Real-time financial data',
+    'AI-powered analysis',
+    'Interactive charts',
+    'Comprehensive metrics'
+  ],
+  cons: [
+    'Select a stock to begin analysis'
+  ],
   isLoading: false
 });
+
+const data = {
+  dates: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  values: [100, 105, 102, 108, 110]
+};
 
 const testData = {
   dates: ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-06', '2024-01-07', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12'],
@@ -137,6 +136,12 @@ async function updateMainInfo(ticker) {
         ...authHeaders()
       }
     });
+    if (res.status === 403) {
+      console.log("exchange");
+      localStorage.removeItem('token');
+      await router.push('/login');
+      return;
+    }
     if (!res.ok) {
       throw new Error('Ошибка получения информации о компании');
     }
@@ -173,6 +178,12 @@ async function updateChart(ticker) {
         ...authHeaders()
       }
     });
+    if (res.status === 403) {
+      console.log("exchange");
+      localStorage.removeItem('token');
+      await router.push('/login');
+      return;
+    }
     if (!res.ok) throw new Error('Ошибка получения информации о компании');
 
     const chartJson = await res.json();
@@ -201,6 +212,12 @@ async function updateAnalys(ticker) {
         ...authHeaders()
       }
     });
+    if (res.status === 403) {
+      console.log("exchange");
+      localStorage.removeItem('token');
+      await router.push('/login');
+      return;
+    }
     if (!res.ok) throw new Error('Ошибка анализа');
 
     const data = await res.json();

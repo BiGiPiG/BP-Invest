@@ -1,11 +1,11 @@
 <template>
-  <div v-if="isLoading" class="chart-spinner">
+  <div v-if="isLoading" class="chart-spinner" :style="spinnerStyle">
     <div class="spinner-container">
       <div class="spinner"></div>
       <p class="loading-text">Generating Chart...</p>
     </div>
   </div>
-  <div v-else class="board" id="chart">
+  <div v-else class="board" id="chart" :style="boardStyle">
     <div class="chart-header">
       <div class="chart-title">Price Chart</div>
       <ul class="period-selector">
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, nextTick } from 'vue';
+import { onMounted, ref, watch, nextTick, computed } from 'vue';
 import Chart from 'chart.js/auto';
 
 const currentPeriod = ref('1M');
@@ -45,7 +45,30 @@ const props = defineProps({
     type: Object,
     default: () => ({ dates: [], values: [] })
   },
-  isLoading: false
+  isLoading: false,
+  infoPanelHeight: {
+    type: Number,
+    default: 0
+  }
+});
+
+// Стили для графика
+const boardStyle = computed(() => {
+  if (props.infoPanelHeight > 0) {
+    return {
+      minHeight: `${props.infoPanelHeight}px`,
+      height: `${props.infoPanelHeight}px`
+    };
+  }
+  return {
+    minHeight: '400px',
+    height: '400px'
+  };
+});
+
+// Стили для спиннера (такие же как у графика)
+const spinnerStyle = computed(() => {
+  return boardStyle.value;
 });
 
 function setPeriod(period) {
@@ -82,12 +105,12 @@ function createChart() {
 
   const context = canvas.getContext('2d');
 
-  const gradient = context.createLinearGradient(0, 0, 0, 400);
+  const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, 'rgba(61, 237, 205, 0.3)');
   gradient.addColorStop(0.7, 'rgba(61, 237, 205, 0.1)');
   gradient.addColorStop(1, 'rgba(61, 237, 205, 0.01)');
 
-  const lineGradient = context.createLinearGradient(0, 0, 0, 400);
+  const lineGradient = context.createLinearGradient(0, 0, 0, canvas.height);
   lineGradient.addColorStop(0, '#3DEDCD');
   lineGradient.addColorStop(1, '#2bb7a9');
 
@@ -95,7 +118,7 @@ function createChart() {
     type: 'line',
     options: {
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       layout: {
         padding: {
           top: 20,
@@ -188,6 +211,14 @@ function createChart() {
   });
 }
 
+watch(() => props.infoPanelHeight, (newHeight) => {
+  if (chartInstance && newHeight > 0) {
+    setTimeout(() => {
+      createChart();
+    }, 100);
+  }
+});
+
 watch(() => props.chartData, (newData) => {
   if (newData && newData.dates && newData.values) {
     updateDatasets();
@@ -212,7 +243,7 @@ onMounted(async () => {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .board {
-  padding: 2.5rem;
+  padding: 1.5rem;
   background: linear-gradient(135deg, #1a1f2e 0%, #242a3d 100%);
   border-radius: 16px;
   box-shadow:
@@ -222,20 +253,33 @@ onMounted(async () => {
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
-  height: fit-content;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  min-height: 200px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .chart-title {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #fff;
   background: linear-gradient(135deg, #fff 0%, #b0b5c3 100%);
@@ -280,22 +324,6 @@ onMounted(async () => {
   font-weight: 600;
 }
 
-.chart-container {
-  width: 100%;
-  height: 100%;
-  min-height: 300px;
-  position: relative;
-  padding: 0;
-  margin: 0;
-}
-
-.chart-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-  max-height: 500px;
-  min-height: 250px;
-}
-
 .board {
   animation: fadeInUp 0.6s ease-out 0.2s both;
 }
@@ -311,95 +339,23 @@ onMounted(async () => {
   }
 }
 
-@media (max-width: 1024px) {
-  .chart-container {
-    min-height: 250px;
-  }
-}
-
-@media (max-width: 768px) {
-  .chart-container {
-    min-height: 220px;
-  }
-}
-
-@media (max-width: 480px) {
-  .chart-container {
-    min-height: 200px;
-  }
-}
-
-@media (max-width: 768px) {
-  .board {
-    padding: 2rem;
-    border-radius: 12px;
-  }
-
-  .chart-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .chart-title {
-    font-size: 1.6rem;
-  }
-
-  .period-selector {
-    align-self: stretch;
-    justify-content: center;
-  }
-
-  .period-item {
-    flex: 1;
-    padding: 0.5rem 0.8rem;
-    font-size: 0.85rem;
-  }
-
-  .chart-container {
-    height: 220px;
-  }
-}
-
-@media (max-width: 480px) {
-  .board {
-    padding: 1.5rem;
-  }
-
-  .period-selector {
-    flex-wrap: wrap;
-  }
-
-  .period-item {
-    min-width: 60px;
-  }
-
-  .chart-container {
-    height: 200px;
-  }
-}
-
-/* Стили для спиннера */
+/* Стили для спиннера - теперь такие же как у графика */
 .chart-spinner {
-  padding: 2rem;
+  padding: 1.5rem;
   background: linear-gradient(135deg, #1a1f2e 0%, #242a3d 100%);
   border-radius: 16px;
-  box-shadow:
-      0 12px 40px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+  inset 0 1px 0 rgba(255, 255, 255, 0.05);
   font-family: "Inter", sans-serif;
   color: #fff;
-  max-width: 1000px;
-  width: 90%; /* Добавил для адаптивности */
-  margin: 2rem auto; /* Отступ сверху и снизу */
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
-  box-sizing: border-box; /* Важно для правильного расчета размеров */
-  height: fit-content;
+  width: 100%;
+  box-sizing: border-box;
+  /* Высота будет устанавливаться динамически через :style */
 }
 
 .spinner-container {
@@ -411,19 +367,19 @@ onMounted(async () => {
 }
 
 .spinner {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border: 4px solid rgba(255, 255, 255, 0.1);
   border-left: 4px solid #3DEDCD;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   box-shadow: 0 0 20px rgba(61, 237, 205, 0.3);
 }
 
 .loading-text {
   color: #b0b5c3;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
   background: linear-gradient(135deg, #b0b5c3 0%, #8a8f9d 100%);
@@ -438,6 +394,70 @@ onMounted(async () => {
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .board, .chart-spinner {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .chart-title {
+    font-size: 1.2rem;
+  }
+
+  .period-selector {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .period-item {
+    flex: 1;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+  }
+
+  .loading-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .board, .chart-spinner {
+    padding: 0.8rem;
+  }
+
+  .period-selector {
+    flex-wrap: wrap;
+  }
+
+  .period-item {
+    min-width: 60px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .spinner {
+    width: 35px;
+    height: 35px;
+  }
+
+  .loading-text {
+    font-size: 0.85rem;
   }
 }
 </style>

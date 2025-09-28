@@ -1,48 +1,65 @@
 <template>
-  <div id="login-form">
-    <div id="main-container" :style="{ minHeight: containerHeight }">
-      <div class="top-section">
-        <div class="tabs-container">
-          <span @click="setMode(true)" :class="['tab', { active: signIn }]">Sign in</span>
-          <span @click="setMode(false)" :class="['tab', { active: !signIn }]">Sign up</span>
-        </div>
-        <div id="line"></div>
+  <div id="login-page">
+    <div class="board" id="login-form">
+      <div class="header">
+        <h1 class="ticker">Welcome to BP Invest</h1>
       </div>
 
-      <div class="centered-content">
+      <div class="tabs-container">
+        <span @click="setMode(true)" :class="['tab', { active: signIn }]">Sign in</span>
+        <span @click="setMode(false)" :class="['tab', { active: !signIn }]">Sign up</span>
+      </div>
+
+      <div class="form-content">
         <div class="input-group">
           <template v-for="field in visibleFields" :key="field.key">
-            <div class="input-label">{{ field.label }}</div>
-            <input
-              :type="field.type"
-              :class="['form-input', { error: touched[field.key] && errors[field.key] }]"
-              :placeholder="field.placeholder"
-              v-model="form[field.key]"
-              @blur="markTouched(field.key); validateField(field.key)"
-              @input="validateField(field.key)"
-            />
-            <div v-if="touched[field.key] && errors[field.key]" class="error-text">{{ errors[field.key] }}</div>
+            <div class="metric-card input-field">
+              <div class="metric-icon">
+                <span class="icon">{{ getFieldIcon(field.key) }}</span>
+              </div>
+              <div class="metric-content">
+                <div class="input-header">
+                  <div class="input-label">{{ field.label }}</div>
+                  <div v-if="touched[field.key] && errors[field.key]" class="error-text">{{ errors[field.key] }}</div>
+                </div>
+                <input
+                    :type="field.type"
+                    :class="['form-input', { error: touched[field.key] && errors[field.key] }]"
+                    :placeholder="field.placeholder"
+                    v-model="form[field.key]"
+                    @blur="markTouched(field.key); validateField(field.key)"
+                    @input="validateField(field.key)"
+                />
+              </div>
+            </div>
           </template>
         </div>
-      </div>
 
-      <div class="buttons-container">
-        <button
-          v-if="signIn"
-          @click="handleLogin"
-          class="btn-primary"
-          :disabled="!form.login || !form.password"
-        >Continue</button>
-        <button
-          v-else
-          @click="handleRegistr"
-          class="btn-primary"
-          :disabled="!form.email || !form.login || !form.password || !form.confirmPassword"
-        >Continue</button>
-        <button v-if="signIn" class="btn-google" @click="handleGoogleLogin">
-          <span class="google-icon">G</span>
-          Continue with Google
-        </button>
+        <div class="buttons-container">
+          <button
+              v-if="signIn"
+              @click="handleLogin"
+              class="btn-primary metric-card"
+              :disabled="!form.login || !form.password"
+          >
+            <span class="btn-icon">→</span>
+            Continue
+          </button>
+          <button
+              v-else
+              @click="handleRegister"
+              class="btn-primary metric-card"
+              :disabled="!form.email || !form.login || !form.password || !form.confirmPassword"
+          >
+            <span class="btn-icon">→</span>
+            Create Account
+          </button>
+
+          <button v-if="signIn" class="btn-google metric-card" @click="handleGoogleLogin">
+            <span class="google-icon">G</span>
+            Continue with Google
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -51,205 +68,350 @@
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-#login-form {
+#login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100%;
-  margin: 0;
-  background: linear-gradient(112.47deg, #000000 -11.01%, #245D5F 70.84%, #389194 160.87%);
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #0f141f 0%, #1a1f2e 50%, #242a3d 100%);
   font-family: "Inter", sans-serif;
 }
 
-#main-container {
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  min-height: 500px;
-  max-height: none;
-  background: #202538;
+.board {
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #1a1f2e 0%, #242a3d 100%);
   border-radius: 16px;
-  box-sizing: border-box;
-  padding: 40px 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
+  box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 480px;
+  animation: fadeInUp 0.6s ease-out 0.1s both;
 }
 
-.top-section {
-  width: 100%;
+.header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.ticker {
+  font-family: "Inter", serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  margin: 0;
+  background: linear-gradient(135deg, #fff 0%, #b0b5c3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
 }
 
 .tabs-container {
   display: flex;
-  gap: 24px;
-  margin-bottom: 16px;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .tab {
-  color: #aaa;
-  font-size: 16px;
-  font-weight: 500;
-  padding: 8px 16px;
+  flex: 1;
+  text-align: center;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  color: #93A0AF;
 }
 
 .tab:hover {
   color: #e6e6e6;
-}
-
-.tab:active {
-  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .tab.active {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 600;
+  color: #3DEDCD;
+  background: rgba(61, 237, 205, 0.1);
+  box-shadow: 0 4px 15px rgba(61, 237, 205, 0.2);
 }
 
-#line {
-  height: 1px;
-  width: 100%;
-  background-color: #ffffff;
-  opacity: 0.3;
-}
-
-.centered-content {
-  width: 100%;
+.form-content {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .input-group {
-  width: 100%;
-  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-field {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  min-height: auto;
+}
+
+.input-field:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(61, 237, 205, 0.2);
+}
+
+.metric-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(61, 237, 205, 0.15) 0%, rgba(43, 183, 169, 0.15) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.metric-content {
+  flex: 1;
+  min-width: 250px;
+}
+
+.input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
 }
 
 .input-label {
-  margin-top: 16px;
-  color: #ffffff;
-  font-size: 14px;
+  color: #93A0AF;
+  font-size: 0.9rem;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.error-text {
+  color: #FF6B6B;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .form-input {
   width: 100%;
-  padding: 14px;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: 1px solid #3a405a;
-  background-color: #2a3042;
+  padding: 0.5rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
   font-family: "Inter", sans-serif;
-  font-size: 15px;
-  box-sizing: border-box;
+  font-size: 1rem;
   transition: border-color 0.3s ease;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #389194;
+  border-bottom-color: #3DEDCD;
 }
 
 .form-input.error {
-  border-color: #DB4437;
-}
-
-.error-text {
-  color: #ffb4b4;
-  font-size: 12px;
-  margin-top: 6px;
-}
-
-.error-summary {
-  background: rgba(219, 68, 55, 0.15);
-  color: #ffdddd;
-  border: 1px solid #DB4437;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 13px;
+  border-bottom-color: #FF6B6B;
 }
 
 .buttons-container {
-  width: 100%;
-  max-width: 320px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1rem;
 }
 
 .btn-primary,
 .btn-google {
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: white;
   font-family: "Inter", sans-serif;
   font-weight: 600;
-  font-size: 15px;
-  transition: transform 0.1s ease, opacity 0.2s ease;
+  font-size: 1rem;
+  cursor: pointer;
+  min-height: 70px;
 }
 
 .btn-primary {
-  background-color: #389194;
-  color: white;
+  background: linear-gradient(135deg, rgba(61, 237, 205, 0.15) 0%, rgba(43, 183, 169, 0.15) 100%);
+  border-color: rgba(61, 237, 205, 0.3);
 }
 
-.btn-primary:hover {
-  opacity: 0.95;
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(61, 237, 205, 0.25) 0%, rgba(43, 183, 169, 0.25) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(61, 237, 205, 0.3);
 }
 
-.btn-primary:active {
-  transform: scale(0.98);
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .btn-google {
-  background-color: #ffffff;
-  color: #000000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .btn-google:hover {
-  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .google-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   background: #DB4437;
   color: white;
   border-radius: 50%;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 0.9rem;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  #login-page {
+    padding: 1rem;
+  }
+
+  .board {
+    padding: 2rem;
+    border-radius: 12px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .ticker {
+    font-size: 1.8rem;
+  }
+
+  .input-field {
+    padding: 1.2rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .input-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .error-text {
+    text-align: center;
+  }
+
+  .metric-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+    margin-top: 0;
+  }
+
+  .btn-primary,
+  .btn-google {
+    padding: 1.2rem;
+    min-height: 60px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .board {
+    padding: 1.5rem;
+  }
+
+  .ticker {
+    font-size: 1.6rem;
+  }
+
+  .tabs-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .input-field {
+    padding: 0.5rem;
+  }
+
+  .input-header {
+    align-items: center;
+  }
 }
 </style>
 
 <script setup lang="js">
 import { ref, reactive, computed } from 'vue'
+import useOAuth2 from "../../composables/useOAuth2.js";
 
-import useOAuth2 from '../../composables/useOAuth2'
+const { loginWithGoogle } = useOAuth2()
 
 const signIn = ref(true);
 
@@ -274,10 +436,6 @@ const touched = reactive({
   confirmPassword: false
 });
 
-const containerHeight = computed(() => {
-  return signIn.value ? '480px' : '680px';
-});
-
 function setMode(isSignIn) {
   signIn.value = isSignIn;
   Object.keys(errors).forEach((k) => (errors[k] = ''));
@@ -300,7 +458,7 @@ function validateField(key) {
   };
 
   if (isFieldRequired() && !value) {
-    message = 'Field is required';
+    message = 'Required';
   }
   else if (value) {
     switch (key) {
@@ -309,10 +467,10 @@ function validateField(key) {
         if (!emailRe.test(value)) message = 'Invalid email';
         break;
       case 'password':
-        if (value.length < 6) message = 'Minimum 6 characters';
+        if (value.length < 6) message = 'Min 6 chars';
         break;
       case 'confirmPassword':
-        if (value !== form.password) message = 'Passwords do not match';
+        if (value !== form.password) message = 'No match';
         break;
     }
   }
@@ -320,34 +478,28 @@ function validateField(key) {
   errors[key] = message;
 }
 
-function validateForm() {
-  const keys = signIn.value
-      ? ['login', 'password']
-      : ['email', 'login', 'password', 'confirmPassword'];
-
-  keys.forEach((k) => validateField(k));
-
-  return keys.every((k) => !errors[k]);
-}
-
-const { loginWithGoogle } = useOAuth2()
-
-function handleGoogleLogin() {
-  loginWithGoogle()
+function getFieldIcon(fieldKey) {
+  const icons = {
+    'email': '✉️',
+    'login': '👤',
+    'password': '🔒',
+    'confirmPassword': '✅'
+  };
+  return icons[fieldKey] || '📋';
 }
 
 const visibleFields = computed(() => {
   if (signIn.value) {
     return [
-      { key: 'login', type: 'text', label: 'Login', placeholder: 'Enter login' },
-      { key: 'password', type: 'password', label: 'Password', placeholder: 'Enter password' }
+      { key: 'login', type: 'text', label: 'Login', placeholder: 'Enter your login' },
+      { key: 'password', type: 'password', label: 'Password', placeholder: 'Enter your password' }
     ]
   }
   return [
-    { key: 'email', type: 'email', label: 'Email', placeholder: 'Enter email' },
-    { key: 'login', type: 'text', label: 'Login', placeholder: 'Enter login' },
-    { key: 'password', type: 'password', label: 'Password', placeholder: 'Enter password' },
-    { key: 'confirmPassword', type: 'password', label: 'Confirm password', placeholder: 'Enter password again' }
+    { key: 'email', type: 'email', label: 'Email', placeholder: 'Enter your email' },
+    { key: 'login', type: 'text', label: 'Login', placeholder: 'Choose a login' },
+    { key: 'password', type: 'password', label: 'Password', placeholder: 'Create a password' },
+    { key: 'confirmPassword', type: 'password', label: 'Confirm Password', placeholder: 'Repeat your password' }
   ]
 });
 
@@ -405,7 +557,7 @@ async function handleLogin() {
   }
 }
 
-async function handleRegistr() {
+async function handleRegister() {
   const keys = ['email', 'login', 'password', 'confirmPassword'];
   keys.forEach((k) => (touched[k] = true));
   keys.forEach((k) => validateField(k));
@@ -413,7 +565,8 @@ async function handleRegistr() {
   const isValid = keys.every((k) => !errors[k] && form[k]?.toString().trim());
   if (!isValid) return;
   try {
-    const response = await fetch('http://localhost:9001/api/auth/registr', {
+    console.log("register new user");
+    const response = await fetch('http://localhost:9001/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -424,14 +577,25 @@ async function handleRegistr() {
     })
 
     if (response.status === 409) {
-      errors.login = 'This login is already taken. Please choose another.';
-      touched.login = true;
-      return;
+      if (response.code === 'USER_ALREADY_EXISTS') {
+        errors.login = 'This login is already taken';
+        touched.login = true;
+        return;
+      } else {
+        errors.email = 'This email is already taken';
+        touched.email = true;
+        return;
+      }
+
     }
 
     window.location.href = '/bp-invest'
   } catch (error) {
     alert("Server error")
   }
+}
+
+function handleGoogleLogin() {
+  loginWithGoogle()
 }
 </script>

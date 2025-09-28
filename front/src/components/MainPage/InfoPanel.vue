@@ -269,7 +269,6 @@ const formatMetricType = (type) => {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
 }
 
-/* Стили для спиннера */
 .info-spinner {
   padding: 2rem;
   background: linear-gradient(135deg, #1a1f2e 0%, #242a3d 100%);
@@ -280,15 +279,15 @@ const formatMetricType = (type) => {
   font-family: "Inter", sans-serif;
   color: #fff;
   max-width: 1000px;
-  width: 90%; /* Добавил для адаптивности */
-  margin: 2rem auto; /* Отступ сверху и снизу */
+  width: 90%;
+  margin: 2rem auto;
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  box-sizing: border-box; /* Важно для правильного расчета размеров */
+  box-sizing: border-box;
   height: fit-content;
 }
 
