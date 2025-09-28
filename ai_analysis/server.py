@@ -1,6 +1,5 @@
 from g4f.client import Client
 from flask import Flask, request, jsonify
-from g4f.typing import Message
 
 app = Flask(__name__)
 
@@ -25,6 +24,7 @@ def build_prompt(symbol: str) -> str:
 @app.route('/analyze', methods=['POST'])
 def analyze():
     data = request.get_json()
+    print(data)
     symbol = data.get('symbol')
 
     if not symbol:
@@ -33,16 +33,14 @@ def analyze():
     prompt = build_prompt(symbol)
 
     try:
-        messages = [Message(role="user", content=prompt)]
-
         response = client.chat.completions.create(
-            model="gpt-4.1",
-            messages=messages,
-            web_search=False
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
         )
         analysis = response.choices[0].message.content
         return jsonify({"symbol": symbol, "analysis": analysis})
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
