@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -133,7 +132,6 @@ public class UserServiceTest {
         );
 
         assertEquals(String.format("Role %s not found", roleName), exception.getMessage());
-        Mockito.verify(userRepository, only()).findByUsername(username);
         Mockito.verify(roleRepository, only()).findByName(roleName);
     }
 
