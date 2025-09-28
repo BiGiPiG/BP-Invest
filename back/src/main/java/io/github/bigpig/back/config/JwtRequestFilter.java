@@ -1,5 +1,6 @@
 package io.github.bigpig.back.config;
 
+import io.github.bigpig.back.exceptions.TokenExpiredException;
 import io.github.bigpig.back.util.JwtUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -34,7 +35,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtils.getUserNameFromJwtToken(jwtToken);
             } catch (ExpiredJwtException e) {
-                log.error("Время жизни токена вышло");
+                log.error("Token's lifetime has expired");
+                throw new TokenExpiredException("Token's lifetime has expired");
             }
         }
 
@@ -45,7 +47,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     jwtUtils.getRolesFromToken(jwtToken).stream().map(SimpleGrantedAuthority::new).toList()
             );
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            log.debug("Authenticated user: {}", username);
+            log.info("Authenticated user: {}", username);
+
         }
 
         filterChain.doFilter(request, response);
