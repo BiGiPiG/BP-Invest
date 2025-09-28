@@ -1,10 +1,7 @@
 package io.github.bigpig.back.controllers;
 
 import io.github.bigpig.back.dto.ExceptionDto;
-import io.github.bigpig.back.exceptions.ErrorCodes;
-import io.github.bigpig.back.exceptions.FetchDataException;
-import io.github.bigpig.back.exceptions.LoginNotFoundException;
-import io.github.bigpig.back.exceptions.UserAlreadyExistsException;
+import io.github.bigpig.back.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +13,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ExceptionDto> handleException(EmailAlreadyExistsException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(new ExceptionDto(ex.getMessage(),
+                ErrorCodes.EMAIL_ALREADY_EXISTS.toString()), HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ExceptionDto> handleException(UserAlreadyExistsException ex) {
@@ -47,6 +51,11 @@ public class GlobalExceptionHandler {
         }
         return new ResponseEntity<>(new ExceptionDto(ex.getMessage(),
                 ErrorCodes.INVALID_PASSWORD.toString()), HttpStatus.NOT_FOUND);
+    }
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ExceptionDto> handleException(TokenExpiredException ex) {
+        return new ResponseEntity<>(new ExceptionDto(ex.getMessage(),
+                ErrorCodes.TOKEN_EXPIRED.toString()), HttpStatus.UNAUTHORIZED);
     }
 }

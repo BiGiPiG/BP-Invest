@@ -8,6 +8,7 @@ import io.github.bigpig.back.exceptions.LoginNotFoundException;
 import io.github.bigpig.back.models.User;
 import io.github.bigpig.back.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -41,12 +43,15 @@ public class AuthService {
     }
 
     public UserDto registerUser(RegistrationUserDto registrationUserDto) {
+        log.info("Registering new user: {}", registrationUserDto.username());
         User user = new User();
         user.setUsername(registrationUserDto.username());
         user.setPassword(passwordEncoder.encode(registrationUserDto.password()));
         user.setEmail(registrationUserDto.email());
 
         userService.createNewUser(user);
+
+        log.info("User registered successfully: {}", registrationUserDto.username());
         return new UserDto(
                 registrationUserDto.username(),
                 registrationUserDto.email()

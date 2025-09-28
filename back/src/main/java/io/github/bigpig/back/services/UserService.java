@@ -1,5 +1,6 @@
 package io.github.bigpig.back.services;
 
+import io.github.bigpig.back.exceptions.EmailAlreadyExistsException;
 import io.github.bigpig.back.exceptions.EntitySaveException;
 import io.github.bigpig.back.exceptions.UserAlreadyExistsException;
 import io.github.bigpig.back.models.User;
@@ -50,6 +51,11 @@ public class UserService implements UserDetailsService {
         if (findByUsername(user.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(user.getUsername());
         }
+
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException(user.getEmail());
+        }
+
         user.setRoles(List.of(roleRepository.findByName(role).orElseThrow(
                 () -> new IllegalStateException(String.format("Role %s not found", role))
         )));
