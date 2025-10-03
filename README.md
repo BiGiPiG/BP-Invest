@@ -40,6 +40,8 @@
 #### Инфраструктура
 - Контейнеризация: Docker + Docker Compose
 - База данных: PostgreSQL 14+
+- Сборка: Maven
+- Code Quality: Lombok
 
 ---
 
@@ -51,7 +53,8 @@
 
 | AI-анализ акций | Страница аутентификации |
 | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/29968229-846d-487b-9eb6-74ca945be201" width="400" alt="AI-анализ"/> | <img src="https://github.com/user-attachments/assets/ec65a946-d6c2-4086-b4d8-de524fd57a6b" width="400" alt="Вход и регистрация"/> |
+| <img src="https://github.com/user-attachments/assets/29968229-846d-487b-9eb6-74ca945be201" width="400" alt="AI-анализ"/> | <img width="400" alt="Страница аутентификации" src="https://github.com/user-attachments/assets/ee8fb46c-4124-48f8-86d9-d54148baabf6" />
+ |
 
 ---
 
@@ -76,26 +79,20 @@ graph TB
 
 ## 🚀 Быстрый старт
 ### Предварительные требования
-- Docker 20.10+
-- Docker Compose 2.0+
-- Сборка: Maven
-- Code Quality: Lombok
+- Docker 28.3.2+
+- Docker Compose 2.38.2+
 
 ### Запуск приложения
 Клонируйте репозиторий:
 
 ```bash
-git clone https://github.com/your-username/bp-invest.git
-cd bp-invest
+git clone https://github.com/BiGiPiG/BP-Invest.git
+cd BP-Invest
 ```
-Настройте переменные окружения:
 
-```bash
-cp .env.example .env
-```
-Отредактируйте .env файл, указав ваши API-ключи
+Отредактируйте application.properties файл, указав ваши API-ключи
 Запустите все сервисы:
 
 ```bash
-docker-compose up -d
+docker-compose up --build
 ```
