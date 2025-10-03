@@ -5,7 +5,7 @@
     </header>
     <div class="main-container">
       <aside>
-        <SideBar />
+        <SideBar :trackedShares="info.trackedShares"/>
       </aside>
       <main class="main-content" :class="{ active: isMainInfo || isAnalyse || isChart }">
 
@@ -86,6 +86,11 @@ const info = reactive({
     { type: 'P/S', value: '---' },
     { type: 'P/B', value: '---' },
     { type: 'EPS', value: '---' },
+  ],
+  trackedShares: [
+      'IBM',
+      'Apple Inc.',
+      'Google'
   ],
   isLoading: false
 });

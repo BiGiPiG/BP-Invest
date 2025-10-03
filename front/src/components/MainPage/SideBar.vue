@@ -1,5 +1,11 @@
 <template>
   <aside>
+    <div class="tracked_menu">
+      <div class="tracked_list_header">Tracked shares</div>
+      <div v-for="share in trackedShares">
+        <div class="trackedShares">{{share}}</div>
+      </div>
+    </div>
     <div class="profile-wrapper">
       <button id="profile" type="button" @click="toggleMenu" ref="btnRef" :aria-expanded="isOpen.toString()">
         <img src="/images/Profile.png" width="40px" />
@@ -23,6 +29,10 @@ const isOpen = ref(false);
 const btnRef = ref(null);
 const menuRef = ref(null);
 const menuWidth = ref(200);
+
+const props = defineProps({
+  trackedShares: { type: Array }
+});
 
 function toggleMenu() {
   isOpen.value = !isOpen.value;
@@ -85,6 +95,38 @@ onBeforeUnmount(() => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+.tracked_menu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tracked_list_header {
+  display: flex;
+  justify-content: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 3%;
+}
+
+.trackedShares {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #fff;
+  height:40px;
+  text-align: center;
+  line-height: 40px;
+}
+
+.trackedShares:hover {
+  background: linear-gradient(145deg, #32394f, #2a3044);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
 
 aside {
   position: relative;
