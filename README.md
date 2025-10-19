@@ -1,9 +1,27 @@
-# BP Invest 📈
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c89c1835-c6f5-413c-8e69-7077a4cf41d4" alt="BP Invest Logo" width="300" />
+</p>
 
-[![Vue](https://img.shields.io/badge/Vue-3.x-%234FC08D?logo=vuedotjs)](https://vuejs.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-%236DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
-[![Docker](https://img.shields.io/badge/Docker-Compose-%232496ED?logo=docker)](https://docker.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-%234169E1?logo=postgresql)](https://postgresql.org)
+<h1 align="center">BP Invest 📈</h1>
+
+<p align="center">
+  AI-powered stock analysis platform for investors
+</p>
+
+<p align="center">
+  <a href="https://vuejs.org/">
+    <img src="https://img.shields.io/badge/Vue-3.x-%234FC08D?logo=vuedotjs" alt="Vue" />
+  </a>
+  <a href="https://spring.io/projects/spring-boot">
+    <img src="https://img.shields.io/badge/Spring%20Boot-3.x-%236DB33F?logo=springboot" alt="Spring Boot" />
+  </a>
+  <a href="https://docker.com">
+    <img src="https://img.shields.io/badge/Docker-Compose-%232496ED?logo=docker" alt="Docker" />
+  </a>
+  <a href="https://postgresql.org">
+    <img src="https://img.shields.io/badge/PostgreSQL-Database-%234169E1?logo=postgresql" alt="PostgreSQL" />
+  </a>
+</p>
 
 **BP Invest** — это веб-приложение для комплексного анализа акций, предоставляющее инвесторам инструментарий для принятия инвестиционных решений на основе актуальных финансовых данных и AI-аналитики.
 
